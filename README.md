@@ -72,6 +72,7 @@ Score     30     60     90     120     150     180     210     240     270     3
 1. Invalid line format will stop the execution
 2. The program allows for an extra throw in case that the last frame is a strike
 3. Fault value will be consider as 0
+4. Assuming that number of frames will be right for each player
 
 ### Technologies
 
