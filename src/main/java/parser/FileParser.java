@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,13 +28,15 @@ public class FileParser implements Parser {
     protected Logger log = Logger.getLogger(getClass());
     private Map<String, Game> games = new HashMap<>();
 
-    private static final String TEN = "10";
+    private static final String MAX_FRAMES = "10";
     private static final String SPACE_DELIMITER = "\\s+";
 
+    /* Read file line by line and created the associated frame
+        Exception if file cannot be opened
+     */
     public void process() {
-        String[] result;
         try {
-            List<String> lines = Files.lines(Paths.get("C:\\Users\\esteb\\Desktop\\demo.txt")).collect(Collectors.toList());
+            List<String> lines = Files.lines(file.toPath()).collect(Collectors.toList());
            for (int i= 0; i<lines.size(); i++) {
                String player = getLineField(lines.get(i), 0);
                Game currentGame;
@@ -47,7 +48,7 @@ public class FileParser implements Parser {
                    games.put(player, currentGame);
                }
 
-               if (TEN.equals(getLineField(lines.get(i), 1))) {
+               if (MAX_FRAMES.equals(getLineField(lines.get(i), 1))) {
                    frame = new Strike(new Roll(10, false), new Roll(0, false));
                    if ((currentGame.getLine().getThrowsList().size()+1 == 10) && i < lines.size()) {
                        frame.setSecondThrow(getFrameRoll(lines.get(i+1)));
@@ -67,10 +68,9 @@ public class FileParser implements Parser {
            }
             populateScores();
             printValues();
-
         }
          catch (IOException e) {
-            e.printStackTrace();
+            log.error("Exception reading file " + file.getName(), e);
         }
     }
 
@@ -78,6 +78,8 @@ public class FileParser implements Parser {
        return games.get(player);
     }
 
+
+    //Once all the file was read, populate the score for each player
     public void populateScores(){
         for (Map.Entry<String, Game> entry : games.entrySet()) {
             Game currentGame = entry.getValue();
@@ -91,6 +93,7 @@ public class FileParser implements Parser {
                 }
                 scores.add(partial);
             }
+            log.info("Score populated for " + currentGame.getPlayer());
         }
     }
 
@@ -144,6 +147,9 @@ public class FileParser implements Parser {
         return "F".equals(getLineField(line, 1)) ?  new Roll(0, true) : new Roll(Integer.parseInt(getLineField(line, 1)), false);
     }
 
+    /* Read line field (Player or score)
+        Throwing exception if line has a bad format
+     */
     private String getLineField(String line, int index) {
         try {
             String[] fields = line.split(SPACE_DELIMITER);
@@ -156,13 +162,10 @@ public class FileParser implements Parser {
 
     private void printValues() {
         Line.printFrames();
-        System.out.println();
         for (Map.Entry<String, Game> entry : games.entrySet()) {
             System.out.println(entry.getValue().getPlayer());
             entry.getValue().getLine().printPinFalls();
-            System.out.println();
             entry.getValue().getLine().printScores();
-            System.out.println();
         }
     }
 

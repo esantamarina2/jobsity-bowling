@@ -31,7 +31,8 @@ public class FrameTest {
     @Test
     public void testStrikeCreation() {
         Roll firstRoll = new Roll(STRIKE_VALUE, false);
-        Strike strike = new Strike(firstRoll, null);
+        Roll secondRoll = new Roll(0, false);
+        Strike strike = new Strike(firstRoll, secondRoll);
         assertThat(strike.isSpare(), is(equalTo(false)));
         assertThat(strike.isStrike(), is(equalTo(true)));
         assertThat(strike.numberOfKnockedPins(), is(equalTo(STRIKE_VALUE)));

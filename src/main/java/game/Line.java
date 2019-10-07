@@ -35,5 +35,6 @@ public class Line {
     public static void printCollection(String title, Stream stream) {
         System.out.print(title + SPACE);
         stream.forEach(element -> System.out.print(element + SPACE));
+        System.out.println();
     }
 }
